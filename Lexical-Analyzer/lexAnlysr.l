@@ -3,17 +3,17 @@
 	#include <string.h>
 	
 
-	struct symbolTable
+	struct Symbol_Table
 	{
-		char name[100];
-		char type[100];
+		char token_name[100];
+		char token_type[100];
 		int length;
 	}ST[1001];
 
-	struct constantTable
+	struct Constant_Table
 	{
-		char name[100];
-		char type[100];
+		char token_name[100];
+		char token_type[100];
 		int length;
 	}CT[1001];
 
@@ -30,16 +30,16 @@
 		return value;
 	}
 
-	int lookup(char *str , int lookupMode)
+	int lookup(char *str , int lookup_Mode)
 	{
-		if(lookupMode == 0)
+		if(lookup_Mode == 0)
 		{
 			int value = hash(str);
 			if(ST[value].length == 0)
 			{
 				return 0;
 			}
-			else if(strcmp(ST[value].name,str)==0)
+			else if(strcmp(ST[value].token_name,str)==0)
 			{
 				return 1;
 			}
@@ -47,7 +47,7 @@
 			{
 				for(int i = value + 1 ; i!=value ; i = (i+1)%1001)
 				{
-					if(strcmp(ST[i].name,str)==0)
+					if(strcmp(ST[i].token_name,str)==0)
 					{
 						return 1;
 					}
@@ -60,13 +60,13 @@
 			int value = hash(str);
 			if(CT[value].length == 0)
 				return 0;
-			else if(strcmp(CT[value].name,str)==0)
+			else if(strcmp(CT[value].token_name,str)==0)
 				return 1;
 			else
 			{
 				for(int i = value + 1 ; i!=value ; i = (i+1)%1001)
 				{
-					if(strcmp(CT[i].name,str)==0)
+					if(strcmp(CT[i].token_name,str)==0)
 					{
 						return 1;
 					}
@@ -76,11 +76,11 @@
 		}
 	}
 
-	void insert(char *str1, char *str2, int insertMode)
+	void insert(char *str1, char *str2, int insert_Mode)  
 	{
-		if(insertMode == 0)
+		if(insert_Mode == 0)
 		{
-			if(lookup(str1, 0))
+			if(lookup(str1, 0)) 
 			{
 				return;
 			}
@@ -89,8 +89,8 @@
 				int value = hash(str1);
 				if(ST[value].length == 0)
 				{
-					strcpy(ST[value].name,str1);
-					strcpy(ST[value].type,str2);
+					strcpy(ST[value].token_name,str1);
+					strcpy(ST[value].token_type,str2);
 					ST[value].length = strlen(str1);
 					return;
 				}
@@ -106,8 +106,8 @@
 					}
 				}
 
-				strcpy(ST[pos].name,str1);
-				strcpy(ST[pos].type,str2);
+				strcpy(ST[pos].token_name,str1);
+				strcpy(ST[pos].token_type,str2);
 				ST[pos].length = strlen(str1);
 			}
 		}
@@ -120,8 +120,8 @@
 				int value = hash(str1);
 				if(CT[value].length == 0)
 				{
-					strcpy(CT[value].name,str1);
-					strcpy(CT[value].type,str2);
+					strcpy(CT[value].token_name,str1);
+					strcpy(CT[value].token_type,str2);
 					CT[value].length = strlen(str1);
 					return;
 				}
@@ -137,8 +137,8 @@
 					}
 				}
 
-				strcpy(CT[pos].name,str1);
-				strcpy(CT[pos].type,str2);
+				strcpy(CT[pos].token_name,str1);
+				strcpy(CT[pos].token_type,str2);
 				CT[pos].length = strlen(str1);
 			}
 		}
@@ -150,11 +150,9 @@
 		for(int i = 0 ; i < 1001 ; i++)
 		{
 			if(ST[i].length == 0)
-			{
 				continue;
-			}
 
-			printf("\t%s\t\t\t%s\n",ST[i].name, ST[i].type);
+			printf("\t%s\t\t\t%s\n",ST[i].token_name, ST[i].token_type);
 		}
 		printf("\n\nCONSTANT TABLE\n\n");
 		for(int i = 0 ; i < 1001 ; i++)
@@ -162,7 +160,7 @@
 			if(CT[i].length == 0)
 				continue;
 
-			printf("\t%s\t\t\t%s\n",CT[i].name, CT[i].type);
+			printf("\t%s\t\t\t%s\n",CT[i].token_name, CT[i].token_type);
 		}
 	}
 %}
@@ -207,25 +205,25 @@ auto|double|int|struct|break|else|long|switch|case|enum|register|typedef|char|ex
 
 
 (.?) {
-	printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+	printf("------------------------------------------------------\n");
 	if(yytext[0]=='#')
 	{
-		printf("ERROR: Error in Pre-Processor directive at line no. %d\n",yylineno);
+		printf("ERROR at line no. %d : Error in Pre-Processor directive \n",yylineno);
 	}
 	else if(yytext[0]=='/')
 	{
-		printf("ERROR: UNMATCHED_COMMENT at line no. %d\n",yylineno);
+		printf("ERROR at line no. %d: UNMATCHED_COMMENT \n",yylineno);
 	}
 	else if(yytext[0]=='"')
 	{
-		printf("ERROR: INCOMPLETE_STRING at line no. %d\n",yylineno);
+		printf("ERROR at line no. %d: INCOMPLETE_STRING \n",yylineno);
 	}
 	else
 	{
-		printf("ERROR: at line no. %d\n",yylineno);
+		printf("ERROR at line no. %d\n",yylineno);
 	}
 	printf("\t%s\n", yytext);
-	printf("\t^^\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+	printf("\t^^\n--------------------------------------------------\n");
 	return 0;
 }
 
