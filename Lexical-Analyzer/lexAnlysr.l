@@ -146,7 +146,9 @@
 
 	void printTables()
 	{
-		printf("\n\nSYMBOL TABLE\n\n");
+		printf("\n\n--------------------------------------------------");
+		printf("\nSYMBOL TABLE\n");
+		printf("--------------------------------------------------\n");
 		for(int i = 0 ; i < 1001 ; i++)
 		{
 			if(ST[i].length == 0)
@@ -154,7 +156,10 @@
 
 			printf("\t%s\t\t\t%s\n",ST[i].token_name, ST[i].token_type);
 		}
-		printf("\n\nCONSTANT TABLE\n\n");
+		printf("--------------------------------------------------\n");
+		printf("\n\n--------------------------------------------------");
+		printf("\nCONSTANT TABLE\n");
+		printf("--------------------------------------------------\n");
 		for(int i = 0 ; i < 1001 ; i++)
 		{
 			if(CT[i].length == 0)
@@ -162,6 +167,7 @@
 
 			printf("\t%s\t\t\t%s\n",CT[i].token_name, CT[i].token_type);
 		}
+		printf("--------------------------------------------------\n");
 	}
 %}
 
@@ -174,34 +180,34 @@ postIdentifier [" "|;|,|\(|\)|<|>|=|\!|\||&|\+|\-|\*|\/|\%|~|\n|\.|\{|\^|\t|\]]
 
 %%
 
-\n  {yylineno++; printf("\n%d", yylineno);}
-([#][" "]*(include)[ ]*([<]?)([A-Za-z]+)[.]?([A-Za-z]*)([>]?))/["\n"|\/|" "|"\t"] {printf("\t\t%s \t\tPre Processor directive\n",yytext);}
-([#][" "]*(define)[" "]*([A-Za-z]+)(" ")*({floatNumber}|{intNumber}))/["\n"|\/|" "|"\t"] {printf("\t\t%s \t\tMacro\n",yytext);}
-\/\/(.*) {printf("\t\t\t%s \t\t\t- SINGLE LINE COMMENT\n", yytext);}				
-\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/ {printf("\t\t\t%s \t\t\tMULTI LINE COMMENT\n", yytext);}
+\n  {yylineno++;}
+([#][" "]*(include)[ ]*([<]?)([A-Za-z]+)[.]?([A-Za-z]*)([>]?))/["\n"|\/|" "|"\t"] {printf("line no: %d\t%s \tPre Processor directive\n",yylineno, yytext);}
+([#][" "]*(define)[" "]*([A-Za-z]+)(" ")*({floatNumber}|{intNumber}))/["\n"|\/|" "|"\t"] {printf("line no: %d\t%s \tMacro\n",yylineno, yytext);}
+\/\/(.*) {printf("line no: %d\t%s \tSINGLE LINE COMMENT\n", yylineno, yytext);}				
+\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/ {printf("line no: %d\t%s \tMULTI LINE COMMENT\n", yylineno, yytext);}
 [ \n\t] ;
-; {printf("\t\t\t%s \t\t\tSEMICOLON DELIMITER\n", yytext);}
-, {printf("\t\t\t%s \t\t\tCOMMA DELIMITER\n", yytext);}
-\{ {printf("\t\t\t%s \t\t\tOPENING BRACES\n", yytext);}
-\} {printf("\t\t\t%s \t\t\tCLOSING BRACES\n", yytext);}
-\( {printf("\t\t\t%s \t\t\tOPENING BRACKETS\n", yytext);}
-\) {printf("\t\t\t%s \t\t\tCLOSING BRACKETS\n", yytext);}
-\[ {printf("\t\t\t%s \t\t\tSQUARE OPENING BRACKETS\n", yytext);}
-\] {printf("\t\t\t%s \t\t\tSQUARE CLOSING BRACKETS\n", yytext);}
-\: {printf("\t\t\t%s \t\t\tCOLON DELIMITER\n", yytext);}
-\\ {printf("\t\t\t%s \t\t\tFSLASH\n", yytext);}
-\. {printf("\t\t\t%s \t\t\tDOT DELIMITER\n", yytext);}
+; {printf("line no: %d\t%s \tSEMICOLON\n", yylineno, yytext);}
+, {printf("line no: %d\t%s \tCOMMA\n", yylineno, yytext);}
+\{ {printf("line no: %d\t%s \tOPENING BRACES\n", yylineno, yytext);}
+\} {printf("line no: %d\t%s \tCLOSING BRACES\n", yylineno, yytext);}
+\( {printf("line no: %d\t%s \tOPENING BRACKETS\n", yylineno, yytext);}
+\) {printf("line no: %d\t%s \tCLOSING BRACKETS\n", yylineno, yytext);}
+\[ {printf("line no: %d\t%s \tSQUARE OPENING BRACKETS\n", yylineno, yytext);}
+\] {printf("line no: %d\t%s \tSQUARE CLOSING BRACKETS\n", yylineno, yytext);}
+\: {printf("line no: %d\t%s \tCOLON\n", yylineno, yytext);}
+\\ {printf("line no: %d\t%s \tFSLASH\n", yylineno, yytext);}
+\. {printf("line no: %d\t%s \tDOT\n", yylineno, yytext);}
 
-auto|double|int|struct|break|else|long|switch|case|enum|register|typedef|char|extern|return|union|continue|for|signed|void|do|if|static|while|default|goto|sizeof|volatile|const|float|short|unsigned|main/[\(|" "|\{|;|:|"\n"|"\t"] {printf("\t\t\t%s \t\t\tKEYWORD\n", yytext); insert(yytext, "KEYWORD", 0);}
-\"[^\n]*\"/[;|,|\)|\}] {printf("\t\t\t%s \t\t\tSTRING CONSTANT\n", yytext); insert(yytext,"STRING CONSTANT", 1);}
-\'[A-Z|a-z]\'/[;|,|\)|:|\}] {printf("\t\t\t%s \t\t\tCharacter CONSTANT\n", yytext); insert(yytext,"Character CONSTANT", 1);}
-[a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ {printf("\t\t\t%s \t\t\tARRAY IDENTIFIER\n", yytext); insert(yytext, "IDENTIFIER", 0);}
+auto|double|int|struct|break|else|long|switch|case|enum|register|typedef|char|extern|return|union|continue|for|signed|void|do|if|static|while|default|goto|sizeof|volatile|const|float|short|unsigned|main/[\(|" "|\{|;|:|"\n"|"\t"] {printf("line no: %d\t%s \tKEYWORD\n", yylineno, yytext); insert(yytext, "KEYWORD", 0);}
+\"[^\n]*\"/[;|,|\)|\}] {printf("line no: %d\t%s \tSTRING CONSTANT\n", yylineno, yytext); insert(yytext,"STRING CONSTANT", 1);}
+\'[A-Z|a-z]\'/[;|,|\)|:|\}] {printf("line no: %d\t%s \tCharacter CONSTANT\n", yylineno, yytext); insert(yytext,"Character CONSTANT", 1);}
+[a-z|A-Z]([a-z|A-Z]|[0-9])*/\[ {printf("line no: %d\t%s \tARRAY IDENTIFIER\n", yylineno, yytext); insert(yytext, "IDENTIFIER", 0);}
 
-{operator}/[a-z]|[0-9]|;|" "|[A-Z]|\(|\"|\'|\)|\n|\t {printf("\t\t\t%s \t\t\tOPERATOR\n", yytext);} 
+{operator}/[a-z]|[0-9]|;|" "|[A-Z]|\(|\"|\'|\)|\n|\t {printf("line no: %d\t%s \tOPERATOR\n", yylineno, yytext);} 
 
-{intNumber}/{postNumber} {printf("\t\t\t%s \t\t\tNUMBER CONSTANT\n", yytext); insert(yytext, "NUMBER CONSTANT", 1);}
-{floatNumber}/{postNumber} {printf("\t\t\t%s \t\t\tFloating CONSTANT\n", yytext); insert(yytext, "Floating CONSTANT", 1);}
-[A-Za-z_][A-Za-z_0-9]*/{postIdentifier} {printf("\t\t\t%s \t\t\tIDENTIFIER\n", yytext); insert(yytext, "IDENTIFIER", 0);}
+{intNumber}/{postNumber} {printf("line no: %d\t%s \tNUMBER CONSTANT\n", yylineno, yytext); insert(yytext, "NUMBER CONSTANT", 1);}
+{floatNumber}/{postNumber} {printf("line no: %d\t%s \tFloating CONSTANT\n", yylineno, yytext); insert(yytext, "Floating CONSTANT", 1);}
+[A-Za-z_][A-Za-z_0-9]*/{postIdentifier} {printf("line no: %d\t%s \tIDENTIFIER\n", yylineno, yytext); insert(yytext, "IDENTIFIER", 0);}
 
 
 (.?) {
@@ -223,7 +229,7 @@ auto|double|int|struct|break|else|long|switch|case|enum|register|typedef|char|ex
 		printf("ERROR at line no. %d\n",yylineno);
 	}
 	printf("\t%s\n", yytext);
-	printf("\t^^\n--------------------------------------------------\n");
+	printf("\n--------------------------------------------------\n");
 	return 0;
 }
 
@@ -239,8 +245,9 @@ int main(int argc , char **argv){
 		CT[i].length=0;
 	}
 
-	yyin = fopen(argv[1],"r");
-	printf("Line\t\t\tLexeme\t\t\tToken Class\n1"); 
+	printf("\n\n");
+
+	yyin = fopen(argv[1],"r"); 
 	yylex();
 	
 	printTables();
