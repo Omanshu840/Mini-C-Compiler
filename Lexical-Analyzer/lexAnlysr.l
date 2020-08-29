@@ -2,22 +2,21 @@
 	#include <stdio.h>
 	#include <string.h>
 	
+	struct Constant_Table
+	{
+		char token_name[100];
+		char token_type[100];
+		int size;
+	}CT[1001];
 
 	struct Symbol_Table
 	{
 		char token_name[100];
 		char token_type[100];
-		int length;
+		int size;
 	}ST[1001];
 
-	struct Constant_Table
-	{
-		char token_name[100];
-		char token_type[100];
-		int length;
-	}CT[1001];
-
-	int hash(char *str)
+	int find_hash(char *str)
 	{
 		int value = 0;
 		for(int i = 0 ; i < strlen(str) ; i++)
@@ -34,8 +33,8 @@
 	{
 		if(lookup_Mode == 0)
 		{
-			int value = hash(str);
-			if(ST[value].length == 0)
+			int value = find_hash(str);
+			if(ST[value].size == 0)
 			{
 				return 0;
 			}
@@ -57,8 +56,8 @@
 		}
 		else
 		{
-			int value = hash(str);
-			if(CT[value].length == 0)
+			int value = find_hash(str);
+			if(CT[value].size == 0)
 				return 0;
 			else if(strcmp(CT[value].token_name,str)==0)
 				return 1;
@@ -86,12 +85,12 @@
 			}
 			else
 			{
-				int value = hash(str1);
-				if(ST[value].length == 0)
+				int value = find_hash(str1);
+				if(ST[value].size == 0)
 				{
 					strcpy(ST[value].token_name,str1);
 					strcpy(ST[value].token_type,str2);
-					ST[value].length = strlen(str1);
+					ST[value].size = strlen(str1);
 					return;
 				}
 
@@ -99,7 +98,7 @@
 
 				for (int i = value + 1 ; i!=value ; i = (i+1)%1001)
 				{
-					if(ST[i].length == 0)
+					if(ST[i].size == 0)
 					{
 						pos = i;
 						break;
@@ -108,7 +107,7 @@
 
 				strcpy(ST[pos].token_name,str1);
 				strcpy(ST[pos].token_type,str2);
-				ST[pos].length = strlen(str1);
+				ST[pos].size = strlen(str1);
 			}
 		}
 		else
@@ -117,12 +116,12 @@
 				return;
 			else
 			{
-				int value = hash(str1);
-				if(CT[value].length == 0)
+				int value = find_hash(str1);
+				if(CT[value].size == 0)
 				{
 					strcpy(CT[value].token_name,str1);
 					strcpy(CT[value].token_type,str2);
-					CT[value].length = strlen(str1);
+					CT[value].size = strlen(str1);
 					return;
 				}
 
@@ -130,7 +129,7 @@
 
 				for (int i = value + 1 ; i!=value ; i = (i+1)%1001)
 				{
-					if(CT[i].length == 0)
+					if(CT[i].size == 0)
 					{
 						pos = i;
 						break;
@@ -139,7 +138,7 @@
 
 				strcpy(CT[pos].token_name,str1);
 				strcpy(CT[pos].token_type,str2);
-				CT[pos].length = strlen(str1);
+				CT[pos].size = strlen(str1);
 			}
 		}
 	}
@@ -151,7 +150,7 @@
 		printf("--------------------------------------------------\n");
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(ST[i].length == 0)
+			if(ST[i].size == 0)
 				continue;
 
 			printf("\t%s\t\t\t%s\n",ST[i].token_name, ST[i].token_type);
@@ -162,7 +161,7 @@
 		printf("--------------------------------------------------\n");
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(CT[i].length == 0)
+			if(CT[i].size == 0)
 				continue;
 
 			printf("\t%s\t\t\t%s\n",CT[i].token_name, CT[i].token_type);
@@ -241,8 +240,8 @@ int main(int argc , char **argv){
 	int i;
 	for (i=0;i<1001;i++)
 	{
-		ST[i].length=0;
-		CT[i].length=0;
+		ST[i].size=0;
+		CT[i].size=0;
 	}
 
 	printf("\n\n");
