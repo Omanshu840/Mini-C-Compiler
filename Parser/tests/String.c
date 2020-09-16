@@ -3,11 +3,9 @@
 
 int main()
 {
-char A[] = "#define MAX 10";
+char A[] = "HEYY";
 char B[ ] = "Hello";
-char ch  = 'B';
+char ch  = "There";
 unsigned a = 1;
-printf("String = %s Value of Pi = %f", A, 3.14);
-
  	return 0;
 }
