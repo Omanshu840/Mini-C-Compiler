@@ -1,16 +1,22 @@
-#include<stdio.h>
+#include <stdio.h>
 
 int main()
 {
-    int temp=0;
+    int temp = 0;
     for (temp = 0; temp < 10; temp++)
         continue;
-    
-    while(temp>0) {
+
+    while (temp > 0)
+    {
         temp--;
+        for (int i = 0; i < temp; i++)
+        {
+            temp--;
+        }
     }
 
-    do {
+    do
+    {
         temp++;
-    }while(temp<10);
+    } while (temp < 10);
 }
