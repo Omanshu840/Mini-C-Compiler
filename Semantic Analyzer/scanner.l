@@ -3,22 +3,22 @@
 	#include <string.h>
 	#include "y.tab.h"
 
-	struct symboltable
+	struct Symbol_Table
 	{
-		char name[100];
-		char class[100];
-		char type[100];
-		char value[100];
+		char token_name[100];
+		char token_class[100];
+		char token_datatype[100];
+		char token_value[100];
 		int nestval;
 		int lineno;
 		int length;
 		int params_count;
 	}ST[1001];
 
-	struct constanttable
+	struct Constant_Table
 	{
-		char name[100];
-		char type[100];
+		char token_name[100];
+		char token_datatype[100];
 		int length;
 	}CT[1001];
 
@@ -28,34 +28,34 @@
 
 	int hash(char *str)
 	{
-		int value = 0;
+		int token_value = 0;
 		for(int i = 0 ; i < strlen(str) ; i++)
 		{
-			value = 10*value + (str[i] - 'A');
-			value = value % 1001;
-			while(value < 0)
-				value = value + 1001;
+			token_value = 10*token_value + (str[i] - 'A');
+			token_value = token_value % 1001;
+			while(token_value < 0)
+				token_value = token_value + 1001;
 		}
-		return value;
+		return token_value;
 	}
 
 	int lookupST(char *str)
 	{
-		int value = hash(str);
-		if(ST[value].length == 0)
+		int token_value = hash(str);
+		if(ST[token_value].length == 0)
 		{
 			return 0;
 		}
-		else if(strcmp(ST[value].name,str)==0)
+		else if(strcmp(ST[token_value].token_name,str)==0)
 		{
 			
-			return value;
+			return token_value;
 		}
 		else
 		{
-			for(int i = value + 1 ; i!=value ; i = (i+1)%1001)
+			for(int i = token_value + 1 ; i!=token_value ; i = (i+1)%1001)
 			{
-				if(strcmp(ST[i].name,str)==0)
+				if(strcmp(ST[i].token_name,str)==0)
 				{
 					
 					return i;
@@ -67,16 +67,16 @@
 
 	int lookupCT(char *str)
 	{
-		int value = hash(str);
-		if(CT[value].length == 0)
+		int token_value = hash(str);
+		if(CT[token_value].length == 0)
 			return 0;
-		else if(strcmp(CT[value].name,str)==0)
+		else if(strcmp(CT[token_value].token_name,str)==0)
 			return 1;
 		else
 		{
-			for(int i = value + 1 ; i!=value ; i = (i+1)%1001)
+			for(int i = token_value + 1 ; i!=token_value ; i = (i+1)%1001)
 			{
-				if(strcmp(CT[i].name,str)==0)
+				if(strcmp(CT[i].token_name,str)==0)
 				{
 					return 1;
 				}
@@ -89,7 +89,7 @@
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(strcmp(ST[i].name,str1)==0)
+			if(strcmp(ST[i].token_name,str1)==0)
 			{
 				ST[i].lineno = line;
 			}
@@ -101,7 +101,7 @@
 	{
 		if(lookupST(str1))
 		{
-			if(strcmp(ST[lookupST(str1)].class,"Identifier")==0 && strcmp(str2,"Array Identifier")==0)
+			if(strcmp(ST[lookupST(str1)].token_class,"Identifier")==0 && strcmp(str2,"Array Identifier")==0)
 			{
 				printf("Error use of array\n");
 				exit(0);
@@ -110,21 +110,21 @@
 		}
 		else
 		{
-			int value = hash(str1);
-			if(ST[value].length == 0)
+			int token_value = hash(str1);
+			if(ST[token_value].length == 0)
 			{
-				strcpy(ST[value].name,str1);
-				strcpy(ST[value].class,str2);
-				ST[value].length = strlen(str1);
-				ST[value].nestval = 9999;
-				ST[value].params_count = -1;
+				strcpy(ST[token_value].token_name,str1);
+				strcpy(ST[token_value].token_class,str2);
+				ST[token_value].length = strlen(str1);
+				ST[token_value].nestval = 9999;
+				ST[token_value].params_count = -1;
 				insertSTline(str1,yylineno);
 				return;
 			}
 
 			int pos = 0;
 
-			for (int i = value + 1 ; i!=value ; i = (i+1)%1001)
+			for (int i = token_value + 1 ; i!=token_value ; i = (i+1)%1001)
 			{
 				if(ST[i].length == 0)
 				{
@@ -133,8 +133,8 @@
 				}
 			}
 
-			strcpy(ST[pos].name,str1);
-			strcpy(ST[pos].class,str2);
+			strcpy(ST[pos].token_name,str1);
+			strcpy(ST[pos].token_class,str2);
 			ST[pos].length = strlen(str1);
 			ST[pos].nestval = 9999;
 			ST[pos].params_count = -1;
@@ -145,9 +145,9 @@
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(strcmp(ST[i].name,str1)==0)
+			if(strcmp(ST[i].token_name,str1)==0)
 			{
-				strcpy(ST[i].type,str2);
+				strcpy(ST[i].token_datatype,str2);
 			}
 		}
     }
@@ -156,9 +156,9 @@
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(strcmp(ST[i].name,str1)==0 && ST[i].nestval == currnest)
+			if(strcmp(ST[i].token_name,str1)==0 && ST[i].nestval == currnest)
 			{
-				strcpy(ST[i].value,str2);
+				strcpy(ST[i].token_value,str2);
 			}
 		}
 	}
@@ -169,8 +169,8 @@
 		if(lookupST(s) && ST[lookupST(s)].nestval != 9999)
 		{
              int pos = 0;
-             int value = hash(s);
-			for (int i = value + 1 ; i!=value ; i = (i+1)%1001)
+             int token_value = hash(s);
+			for (int i = token_value + 1 ; i!=token_value ; i = (i+1)%1001)
 			{
 				if(ST[i].length == 0)
 				{
@@ -179,8 +179,8 @@
 				}
 			}
 
-			strcpy(ST[pos].name,s);
-			strcpy(ST[pos].class,"Identifier");
+			strcpy(ST[pos].token_name,s);
+			strcpy(ST[pos].token_class,"Identifier");
 			ST[pos].length = strlen(s);
 			ST[pos].nestval = nest;
 			ST[pos].params_count = -1;
@@ -190,7 +190,7 @@
 		{
 			for(int i = 0 ; i < 1001 ; i++)
 			{
-				if(strcmp(ST[i].name,s)==0 )
+				if(strcmp(ST[i].token_name,s)==0 )
 				{
 					ST[i].nestval = nest;
 				}
@@ -202,7 +202,7 @@
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0 )
+			if(strcmp(ST[i].token_name,s)==0 )
 			{
 				ST[i].params_count = count;
 			}
@@ -213,7 +213,7 @@
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0 )
+			if(strcmp(ST[i].token_name,s)==0 )
 			{
 				return ST[i].params_count;
 			}
@@ -225,9 +225,9 @@
 	{
 		for(int i = 0 ; i < 1001 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0 )
+			if(strcmp(ST[i].token_name,s)==0 )
 			{
-				strcpy(ST[i].class,"Function");
+				strcpy(ST[i].token_class,"Function");
 				return;
 			}
 		}
@@ -240,18 +240,18 @@
 			return;
 		else
 		{
-			int value = hash(str1);
-			if(CT[value].length == 0)
+			int token_value = hash(str1);
+			if(CT[token_value].length == 0)
 			{
-				strcpy(CT[value].name,str1);
-				strcpy(CT[value].type,str2);
-				CT[value].length = strlen(str1);
+				strcpy(CT[token_value].token_name,str1);
+				strcpy(CT[token_value].token_datatype,str2);
+				CT[token_value].length = strlen(str1);
 				return;
 			}
 
 			int pos = 0;
 
-			for (int i = value + 1 ; i!=value ; i = (i+1)%1001)
+			for (int i = token_value + 1 ; i!=token_value ; i = (i+1)%1001)
 			{
 				if(CT[i].length == 0)
 				{
@@ -260,8 +260,8 @@
 				}
 			}
 
-			strcpy(CT[pos].name,str1);
-			strcpy(CT[pos].type,str2);
+			strcpy(CT[pos].token_name,str1);
+			strcpy(CT[pos].token_datatype,str2);
 			CT[pos].length = strlen(str1);
 		}
 	}
@@ -284,7 +284,7 @@
 		int flag = 0;
 		for(int i = 0 ; i < 1000 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0)
+			if(strcmp(ST[i].token_name,s)==0)
 			{
 				if(ST[i].nestval > currnest)
 				{
@@ -311,9 +311,9 @@
 	{
 		for(int i = 0 ; i < 1000 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0)
+			if(strcmp(ST[i].token_name,s)==0)
 			{
-				if(strcmp(ST[i].class,"Function")==0)
+				if(strcmp(ST[i].token_class,"Function")==0)
 					return 1;
 			}
 		}
@@ -324,9 +324,9 @@
 	{
 		for(int i = 0 ; i < 1000 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0)
+			if(strcmp(ST[i].token_name,s)==0)
 			{
-				if(strcmp(ST[i].class,"Array Identifier")==0)
+				if(strcmp(ST[i].token_class,"Array Identifier")==0)
 				{
 					return 0;
 				}
@@ -339,7 +339,7 @@
 	{
 		for(int i = 0 ; i < 1000 ; i++)
 		{
-			if(strcmp(ST[i].name,s)==0)
+			if(strcmp(ST[i].token_name,s)==0)
 			{				
 				if(ST[i].nestval == currnest)
 				{
@@ -355,9 +355,9 @@
 	{
 		for(int i=0; i<1001; i++)
 		{
-			if(strcmp(ST[i].name, str) == 0 && strcmp(ST[i].class, "Function") == 0)
+			if(strcmp(ST[i].token_name, str) == 0 && strcmp(ST[i].token_class, "Function") == 0)
 			{
-				printf("Function redeclaration not allowed\n");
+				printf("ERROR: Redeclaration of Function\n");
 				exit(0);
 			}
 		}
@@ -367,7 +367,7 @@
 	{
 		for(int i=0; i<1001; i++)
 		{
-			if(strcmp(ST[i].name, str) == 0 && strcmp(ST[i].class, "Function") == 0 || strcmp(ST[i].name,"printf")==0 )
+			if(strcmp(ST[i].token_name, str) == 0 && strcmp(ST[i].token_class, "Function") == 0 || strcmp(ST[i].token_name,"printf")==0 )
 			{
 				return 1;
 			}
@@ -379,7 +379,7 @@
 	{
 		if(!strcmp(type_specifier, "void"))
 		{
-			printf("Parameters cannot be of type void\n");
+			printf("ERROR: Params of type void\n");
 			exit(0);
 		}
 		return 0;
@@ -389,9 +389,9 @@
 	{
 			for(int i = 0 ; i < 1001 ; i++ )
 			{
-				if(strcmp(ST[i].name,s)==0)
+				if(strcmp(ST[i].token_name,s)==0)
 				{
-					return ST[i].type[0];
+					return ST[i].token_datatype[0];
 				}
 			}
 		
@@ -399,10 +399,7 @@
 
 	void printST()
 	{
-		printf("%10s | %15s | %10s | %10s | %10s | %15s | %10s |\n","SYMBOL", "CLASS", "TYPE","VALUE", "LINE NO", "NESTING", "PARAMS COUNT");
-		for(int i=0;i<100;i++) {
-			printf("+");
-		}
+		printf("%10s | %10s | %10s | %10s | %10s | %10s | %10s |\n", "Line No", "Token", "Class", "Datatype", "Value", "Nesting", "Parameters");
 		printf("\n");
 		for(int i = 0 ; i < 1001 ; i++)
 		{
@@ -432,13 +429,13 @@
 			{
 				scope_depth = "*****";
 			}
-			if(strcmp(ST[i].name, "main") == 0)
+			if(strcmp(ST[i].token_name, "main") == 0)
 			{
-				printf("%10s | %15s | %10s | %10s | %10d | %15s | %10d |\n",ST[i].name, ST[i].class, ST[i].type, ST[i].value, ST[i].lineno, scope_depth, 0);
+				printf("%10d | %10s | %10s | %10s | %10s | %10s | %10d |\n", ST[i].lineno, ST[i].token_name, ST[i].token_class, ST[i].token_datatype, ST[i].token_value, scope_depth, 0);
 			}
 			else
 			{
-				printf("%10s | %15s | %10s | %10s | %10d | %15s | %10d |\n",ST[i].name, ST[i].class, ST[i].type, ST[i].value, ST[i].lineno, scope_depth, ST[i].params_count);
+				printf("%10d | %10s | %10s | %10s | %10s | %10s | %10d |\n", ST[i].lineno, ST[i].token_name, ST[i].token_class, ST[i].token_datatype, ST[i].token_value, scope_depth, ST[i].params_count);
 			}
 		}
     }
@@ -446,17 +443,14 @@
 
 	void printCT()
 	{
-		printf("%10s | %15s\n","NAME", "TYPE");
-		for(int i=0;i<50;i++) {
-			printf("+");
-		}
+		printf("%10s | %10s\n","Name", "Type");
 		printf("\n");
 		for(int i = 0 ; i < 1001 ; i++)
 		{
 			if(CT[i].length == 0)
 				continue;
 
-			printf("%10s | %15s\n",CT[i].name, CT[i].type);
+			printf("%10s | %15s\n",CT[i].token_name, CT[i].token_datatype);
 		}
 	}
 	char curid[20];

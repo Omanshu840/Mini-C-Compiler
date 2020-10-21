@@ -94,8 +94,8 @@ variable_declaration_list
 			: variable_declaration_list ',' variable_declaration_identifier | variable_declaration_identifier;
 
 variable_declaration_identifier 
-			: identifier {if(duplicate(curid)){printf("Duplicate\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi   
-			  | array_identifier {if(duplicate(curid)){printf("Duplicate\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi;
+			: identifier {if(duplicate(curid)){printf("\n\nERROR Duplicate declaration of identifier\n\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi   
+			  | array_identifier {if(duplicate(curid)){printf("\n\nERROR Duplicate declaration of identifier\n\n");exit(0);}insertSTnest(curid,currnest); ins();  } vdi;
 			
 			
 
@@ -106,7 +106,7 @@ identifier_array_type
 			| ;
 
 initilization_params
-			: integer_constant ']' initilization {if($$ < 1) {printf("Wrong array size\n"); exit(0);} }
+			: integer_constant ']' initilization {if($$ < 1) {printf("\n\nERROR Invalid array size\n\n"); exit(0);} }
 			| ']' string_initilization;
 
 initilization
@@ -181,7 +181,7 @@ expression_statment
 			| ';' ;
 
 conditional_statements 
-			: IF '(' simple_expression ')' {if($3!=1){printf("Condition checking is not of type int\n");exit(0);}} statement conditional_statements_breakup;
+			: IF '(' simple_expression ')' {if($3!=1){printf("\n\nERROR Condition checking is not of type int\n\n");exit(0);}} statement conditional_statements_breakup;
 
 conditional_statements_breakup
 			: ELSE statement
@@ -189,18 +189,18 @@ conditional_statements_breakup
 
 iterative_statements 
 			: WHILE '(' simple_expression ')' {if($3!=1){printf("Condition checking is not of type int\n");exit(0);}} statement 
-			| FOR '(' expression ';' simple_expression ';' {if($5!=1){printf("Condition checking is not of type int\n");exit(0);}} expression ')' 
-			| DO statement WHILE '(' simple_expression ')'{if($5!=1){printf("Condition checking is not of type int\n");exit(0);}} ';';
+			| FOR '(' expression ';' simple_expression ';' {if($5!=1){printf("\n\nERROR Condition checking is not of type int\n\n");exit(0);}} expression ')' 
+			| DO statement WHILE '(' simple_expression ')'{if($5!=1){printf("\n\nERROR Condition checking is not of type int\n\n");exit(0);}} ';';
 return_statement 
-			: RETURN ';' {if(strcmp(currfunctype,"void")) {printf("Returning void of a non-void function\n"); exit(0);}}
+			: RETURN ';' {if(strcmp(currfunctype,"void")) {printf("\n\nERROR Void function has return\n\n"); exit(0);}}
 			| RETURN expression ';' { 	if(!strcmp(currfunctype, "void"))
 										{ 
-											yyerror("Function is void");
+											yyerror("\n\n ERROR Void function has int return\n\n");
 										}
 
 										if((currfunctype[0]=='i' || currfunctype[0]=='c') && $2!=1)
 										{
-											printf("Expression doesn't match return type of function\n"); exit(0);
+											printf("\n\nERROR Expression doesn't match return type of function\n\n"); exit(0);
 										}
 			              
 			                     	};
@@ -228,37 +228,37 @@ expression
 			                                                          $$=1;
 			                                                          } 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("\n\nERROR Type Mismatch\n\n"); exit(0);} 
 			                                                       }
 			| mutable addition_assignment_operator expression     {
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("\n\nERROR Type Mismatch\n\n"); exit(0);} 
 			                                                       }
 			| mutable subtraction_assignment_operator expression  {
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("\n\nERROR Type Mismatch\n\n"); exit(0);} 
 			                                                       }
 			| mutable multiplication_assignment_operator expression {
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("\n\nERROR Type Mismatch\n\n"); exit(0);} 
 			                                                       }
 			| mutable division_assignment_operator expression 		{
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("\n\nERROR Type Mismatch\n\n"); exit(0);} 
 			                                                       }
 			| mutable modulo_assignment_operator expression 		{
 																	  if($1==1 && $3==1) 
 			                                                          $$=1; 
 			                                                          else 
-			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
+			                                                          {$$=-1; printf("\n\nERROR Type Mismatch\n\n"); exit(0);} 
 			                                                       }
 			| mutable increment_operator 							{if($1 == 1) $$=1; else $$=-1;}
 			| mutable decrement_operator 							{if($1 == 1) $$=1; else $$=-1;}
@@ -308,9 +308,9 @@ factor
 mutable 
 			: identifier {
 						  if(check_id_is_func(curid))
-						  {printf("Function name used as Identifier\n"); exit(8);}
+						  {printf("\n\nERROR identifier can't same as a function name\n\n"); exit(8);}
 			              if(!checkscope(curid))
-			              {printf("%s\n",curid);printf("Undeclared\n");exit(0);} 
+			              {printf("%s\n",curid);printf("\n\nERROR Undeclared identifier\n\n");exit(0);} 
 			              if(!checkarray(curid))
 			              {printf("%s\n",curid);printf("Array ID has no subscript\n");exit(0);}
 			              if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
@@ -318,7 +318,7 @@ mutable
 			              else
 			              $$ = -1;
 			              }
-			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("Undeclared\n");exit(0);}} '[' expression ']' 
+			| array_identifier {if(!checkscope(curid)){printf("%s\n",curid);printf("\n\nERROR Undeclared identifier\n\n");exit(0);}} '[' expression ']' 
 			                   {if(gettype(curid,0)=='i' || gettype(curid,1)== 'c')
 			              		$$ = 1;
 			              		else
@@ -333,7 +333,7 @@ immutable
 call
 			: identifier '('{
 			             if(!check_declaration(curid, "Function"))
-			             { printf("Function not declared"); exit(0);} 
+			             { printf("\n\nERROR Function not declared\n\n"); exit(0);} 
 			             insertSTF(curid); 
 						 strcpy(currfunccall,curid);
 			             } arguments ')' 
@@ -341,7 +341,7 @@ call
 							{ 
 								if(getSTparamscount(currfunccall)!=call_params_count)
 								{	
-									yyerror("Number of arguments in function call doesn't match number of parameters");
+									yyerror("\n\nERROR Missing Arguments in function Call\n\n");
 									//printf("Number of arguments in function call %s doesn't match number of parameters\n", currfunccall);
 									exit(8);
 								}
@@ -382,13 +382,10 @@ int main(int argc , char **argv)
 
 	if(flag == 0)
 	{
-		printf("Status: Parsing Complete - Valid\n");
-		printf("%50s", "SYMBOL TABLE\n");
-		printf("%30s %s\n", " ", "+++++++++++++++++++++");
+		printf("\n%s\n", "SYMBOL TABLE\n");
 		printST();
 
-		printf("\n\n%30s","CONSTANT TABLE\n");
-		printf("%10s %s\n", " ", "++++++++++++++++++++++++++");
+		printf("\n\n%s\n","CONSTANT TABLE\n");
 		printCT();
 	}
 }
@@ -397,7 +394,6 @@ void yyerror(char *s)
 {
 	printf("Line %d: %s %s\n", yylineno, s, yytext);
 	flag=1;
-	printf("Status: Parsing Failed - Invalid\n");
 	exit(7);
 }
 
