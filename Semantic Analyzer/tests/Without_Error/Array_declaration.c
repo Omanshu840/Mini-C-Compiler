@@ -3,6 +3,6 @@
 
 int main()
 {
+	char array[20];
 	int values[5];
-	char array_char[] = "character Array";
 }

@@ -9,7 +9,7 @@ int main()
     while (temp > 0)
     {
         temp--;
-        for (int i = 0; i < temp; i++)
+        for (ini = 0; i < temp; i++)
         {
             temp--;
         }

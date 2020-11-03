@@ -379,7 +379,7 @@
 	{
 		if(!strcmp(type_specifier, "void"))
 		{
-			printf("ERROR: Params of type void\n");
+			printf("ERROR: Params of Type void\n");
 			exit(0);
 		}
 		return 0;
@@ -394,7 +394,6 @@
 					return ST[i].token_datatype[0];
 				}
 			}
-		
 	}
 
 	void printST()

@@ -1064,7 +1064,7 @@ char *yytext;
 	{
 		if(!strcmp(type_specifier, "void"))
 		{
-			printf("ERROR: Params of type void\n");
+			printf("ERROR: Params of Type void\n");
 			exit(0);
 		}
 		return 0;
